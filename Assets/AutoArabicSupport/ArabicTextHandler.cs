@@ -25,7 +25,12 @@ public class ArabicTextHandler : MonoBehaviour
     private FontWeight ArabicFontWeight = FontWeight.Regular;
 
     [SerializeField]
-    private FontWeight UrduFontWeight = FontWeight.Thin;
+    private FontWeight UrduFontWeight = FontWeight.Light;
+
+    [SerializeField]
+    private bool OverrideDefaultFontWeight = false;
+    [SerializeField]
+    private FontWeight DefaultFontWeight = FontWeight.Light;
 
     [Header("Error Handling")]
     [SerializeField]
@@ -154,7 +159,7 @@ public class ArabicTextHandler : MonoBehaviour
     {
         m_textComponent.isRightToLeftText = false;
         m_textComponent.characterSpacing = 0f;
-        m_textComponent.fontWeight = m_defaultFontWeight;
+        m_textComponent.fontWeight = OverrideDefaultFontWeight? DefaultFontWeight : m_defaultFontWeight;
     }
 
     private string SafeArabicFix(string text)
