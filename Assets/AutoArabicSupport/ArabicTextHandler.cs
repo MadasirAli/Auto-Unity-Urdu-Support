@@ -251,7 +251,7 @@ public class ArabicTextHandler : MonoBehaviour
         try
         {
             // Try the normal fix first
-            return UrduSupport.Fix(text);
+            return UrduSupport.Fix(text, false);
         }
         catch (IndexOutOfRangeException)
         {
