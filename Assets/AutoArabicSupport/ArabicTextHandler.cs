@@ -39,6 +39,7 @@ public class ArabicTextHandler : MonoBehaviour
 
     [Header("Debug Info")]
     [SerializeField] private bool containsArabic = false;
+    [SerializeField] private bool containsUrdu = false;
     [SerializeField] private string lastProcessedText = "";
     public string lastError = "";
 
@@ -133,12 +134,13 @@ public class ArabicTextHandler : MonoBehaviour
         
         string originalText = previousRawText;
         containsArabic = ContainsArabicCharacters(originalText);
+        containsUrdu = ContainsUrduCharacters(originalText);
         
-        if (containsArabic)
+        if (containsUrdu)
         {
             try
             {
-                string processedText = SafeArabicFix(originalText);
+                string processedText = SafeUrduFix(originalText);
                 
                 // Store the fixed text and apply it
                 lastFixedText = processedText;
@@ -153,6 +155,29 @@ public class ArabicTextHandler : MonoBehaviour
                     Debug.LogWarning($"ArabicTextHandler: Failed to process text '{originalText}'. Error: {e.Message}");
                 }
                 
+                // Fallback: use original text
+                lastFixedText = originalText;
+                textComponent.text = originalText;
+            }
+        }else if (containsUrdu)
+        {
+            try
+            {
+                string processedText = SafeArabicFix(originalText);
+
+                // Store the fixed text and apply it
+                lastFixedText = processedText;
+                textComponent.text = processedText;
+                lastProcessedText = processedText;
+            }
+            catch (Exception e)
+            {
+                lastError = e.Message;
+                if (logErrors)
+                {
+                    Debug.LogWarning($"ArabicTextHandler: Failed to process text '{originalText}'. Error: {e.Message}");
+                }
+
                 // Fallback: use original text
                 lastFixedText = originalText;
                 textComponent.text = originalText;
@@ -221,7 +246,22 @@ public class ArabicTextHandler : MonoBehaviour
             throw; // Re-throw other exceptions
         }
     }
-    
+    string SafeUrduFix(string text)
+    {
+        try
+        {
+            // Try the normal fix first
+            return UrduSupport.Fix(text);
+        }
+        catch (IndexOutOfRangeException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            throw; // Re-throw other exceptions
+        }
+    }
     string ProcessTextSafely(string text)
     {
         // Try processing character by character if the full text fails
@@ -257,7 +297,45 @@ public class ArabicTextHandler : MonoBehaviour
         
         return result;
     }
-    
+    private static bool ContainsUrduCharacters(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return false;
+
+        foreach (char c in text)
+        {
+            switch (c)
+            {
+                // Urdu-specific characters
+                case '\u0679': // ٹ
+                case '\u067E': // پ
+                case '\u0686': // چ
+                case '\u0688': // ڈ
+                case '\u0691': // ڑ
+                case '\u0698': // ژ
+                case '\u06A9': // ک
+                case '\u06AF': // گ
+                case '\u06BA': // ں
+                case '\u06C1': // ہ
+                case '\u06BE': // ھ
+                case '\u06CC': // ی
+                case '\u06D2': // ے
+                case '\u06F0': // ۰
+                case '\u06F1': // ۱
+                case '\u06F2': // ۲
+                case '\u06F3': // ۳
+                case '\u06F4': // ۴
+                case '\u06F5': // ۵
+                case '\u06F6': // ۶
+                case '\u06F7': // ۷
+                case '\u06F8': // ۸
+                case '\u06F9': // ۹
+                    return true;
+            }
+        }
+
+        return false;
+    }
     bool ContainsArabicCharacters(string text)
     {
         if (string.IsNullOrEmpty(text)) return false;
