@@ -18,17 +18,17 @@ public class ArabicTextHandler : MonoBehaviour
     private float ArabicCharacterSpacing = 0f;
 
     [SerializeField]
-    private float UrduCharacterSpacing = 0f;
+    private float UrduCharacterSpacing = -10f;
 
     [Header("Font Style")]
     [SerializeField]
-    private FontWeight ArabicFontWeight = FontWeight.Regular;
+    private FontWeight ArabicFontWeight = FontWeight.Light;
 
     [SerializeField]
     private FontWeight UrduFontWeight = FontWeight.Light;
 
     [SerializeField]
-    private bool OverrideDefaultFontWeight = false;
+    private bool OverrideDefaultFontWeight = true;
     [SerializeField]
     private FontWeight DefaultFontWeight = FontWeight.Light;
 
@@ -50,11 +50,13 @@ public class ArabicTextHandler : MonoBehaviour
     private bool m_isProcessing;
 
     private FontWeight m_defaultFontWeight;
+    private float m_defaultTextSpacing;
 
     private void Awake()
     {
         m_textComponent = GetComponent<TMP_Text>();
         m_defaultFontWeight = m_textComponent.fontWeight;
+        m_defaultTextSpacing = m_textComponent.characterSpacing;
     }
 
     /// <summary>
@@ -158,7 +160,7 @@ public class ArabicTextHandler : MonoBehaviour
     private void ConfigureDefault()
     {
         m_textComponent.isRightToLeftText = false;
-        m_textComponent.characterSpacing = 0f;
+        m_textComponent.characterSpacing = m_defaultTextSpacing;
         m_textComponent.fontWeight = OverrideDefaultFontWeight? DefaultFontWeight : m_defaultFontWeight;
     }
 
