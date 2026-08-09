@@ -20,6 +20,13 @@ public class ArabicTextHandler : MonoBehaviour
     [SerializeField]
     private float UrduCharacterSpacing = 0f;
 
+    [Header("Font Style")]
+    [SerializeField]
+    private FontWeight ArabicFontWeight = FontWeight.Regular;
+
+    [SerializeField]
+    private FontWeight UrduFontWeight = FontWeight.Thin;
+
     [Header("Error Handling")]
     [SerializeField]
     private bool SkipErrorCausingCharacters = true;
@@ -37,18 +44,21 @@ public class ArabicTextHandler : MonoBehaviour
     private TMP_Text m_textComponent;
     private bool m_isProcessing;
 
+    private FontWeight m_defaultFontWeight;
+
     private void Awake()
     {
         m_textComponent = GetComponent<TMP_Text>();
+        m_defaultFontWeight = m_textComponent.fontWeight;
     }
 
     /// <summary>
     /// Processes the localized text according to the currently selected
     /// Unity Localization language.
     ///
-    /// Urdu (ur) -> UrduSupport + RTL + Urdu spacing
-    /// Arabic (ar) -> ArabicSupport + RTL + Arabic spacing
-    /// Everything else -> unchanged + LTR + default spacing
+    /// Urdu (ur) -> UrduSupport + RTL + Urdu spacing + optional Light font
+    /// Arabic (ar) -> ArabicSupport + RTL + Arabic spacing + optional Light font
+    /// Everything else -> unchanged + LTR + default spacing + default font weight
     ///
     /// Assign this method to the LocalizeStringEvent "Update String" event.
     /// </summary>
@@ -128,18 +138,23 @@ public class ArabicTextHandler : MonoBehaviour
     {
         m_textComponent.isRightToLeftText = true;
         m_textComponent.characterSpacing = UrduCharacterSpacing;
+
+        m_textComponent.fontWeight = UrduFontWeight;
     }
 
     private void ConfigureArabic()
     {
         m_textComponent.isRightToLeftText = true;
         m_textComponent.characterSpacing = ArabicCharacterSpacing;
+
+        m_textComponent.fontWeight = ArabicFontWeight;
     }
 
     private void ConfigureDefault()
     {
         m_textComponent.isRightToLeftText = false;
         m_textComponent.characterSpacing = 0f;
+        m_textComponent.fontWeight = m_defaultFontWeight;
     }
 
     private string SafeArabicFix(string text)
